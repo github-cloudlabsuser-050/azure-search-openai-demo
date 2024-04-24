@@ -30,6 +30,10 @@ from text import nonewlines
 
 @dataclass
 class Document:
+    """
+    Represents a document with various properties and methods for serialization.
+    """
+
     id: Optional[str]
     content: Optional[str]
     embedding: Optional[List[float]]
@@ -90,6 +94,64 @@ class ThoughtStep:
     props: Optional[dict[str, Any]] = None
 
 
+class Approach(ABC):
+    """
+    Base class for different approaches used in the application.
+
+    Args:
+        search_client (SearchClient): The search client used for querying the search index.
+        openai_client (AsyncOpenAI): The OpenAI client used for text and image embeddings.
+        auth_helper (AuthenticationHelper): The authentication helper for building security filters.
+        query_language (Optional[str]): The query language to be used for search queries.
+        query_speller (Optional[str]): The query speller to be used for search queries.
+        embedding_deployment (Optional[str]): The deployment name for the embedding model (not needed for non-Azure OpenAI or retrieval_mode="text").
+        embedding_model (str): The name of the embedding model to be used.
+        embedding_dimensions (int): The number of dimensions for the embedding vectors.
+        openai_host (str): The host URL for the OpenAI service.
+        vision_endpoint (str): The endpoint URL for the Azure Computer Vision service.
+        vision_token_provider (Callable[[], Awaitable[str]]): A callable function that provides the access token for the Azure Computer Vision service.
+
+    Attributes:
+        search_client (SearchClient): The search client used for querying the search index.
+        openai_client (AsyncOpenAI): The OpenAI client used for text and image embeddings.
+        auth_helper (AuthenticationHelper): The authentication helper for building security filters.
+        query_language (Optional[str]): The query language to be used for search queries.
+        query_speller (Optional[str]): The query speller to be used for search queries.
+        embedding_deployment (Optional[str]): The deployment name for the embedding model (not needed for non-Azure OpenAI or retrieval_mode="text").
+        embedding_model (str): The name of the embedding model to be used.
+        embedding_dimensions (int): The number of dimensions for the embedding vectors.
+        openai_host (str): The host URL for the OpenAI service.
+        vision_endpoint (str): The endpoint URL for the Azure Computer Vision service.
+        vision_token_provider (Callable[[], Awaitable[str]]): A callable function that provides the access token for the Azure Computer Vision service.
+    """
+
+    def __init__(
+        self,
+        search_client: SearchClient,
+        openai_client: AsyncOpenAI,
+        auth_helper: AuthenticationHelper,
+        query_language: Optional[str],
+        query_speller: Optional[str],
+        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
+        embedding_model: str,
+        embedding_dimensions: int,
+        openai_host: str,
+        vision_endpoint: str,
+        vision_token_provider: Callable[[], Awaitable[str]],
+    ):
+        self.search_client = search_client
+        self.openai_client = openai_client
+        self.auth_helper = auth_helper
+        self.query_language = query_language
+        self.query_speller = query_speller
+        self.embedding_deployment = embedding_deployment
+        self.embedding_model = embedding_model
+        self.embedding_dimensions = embedding_dimensions
+        self.openai_host = openai_host
+        self.vision_endpoint = vision_endpoint
+        self.vision_token_provider = vision_token_provider
+
+    # Rest of the code...
 class Approach(ABC):
     def __init__(
         self,
